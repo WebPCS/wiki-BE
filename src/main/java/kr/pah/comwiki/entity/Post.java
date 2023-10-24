@@ -15,6 +15,7 @@ public class Post {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String imagePath;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -77,5 +78,13 @@ public class Post {
 
     public void setHistories(List<History> histories) {
         this.histories = histories;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }
