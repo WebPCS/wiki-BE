@@ -18,7 +18,7 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User author;
+    private Users author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<History> histories = new ArrayList<>();
@@ -63,11 +63,11 @@ public class Post {
         this.updatedAt = updatedAt;
     }
 
-    public User getAuthor() {
+    public Users getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(Users author) {
         this.author = author;
     }
 
