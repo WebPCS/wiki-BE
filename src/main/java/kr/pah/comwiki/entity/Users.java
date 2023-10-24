@@ -8,7 +8,7 @@ import java.util.List;
 import static jakarta.persistence.CascadeType.*;
 
 @Entity
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
