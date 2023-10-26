@@ -17,6 +17,10 @@ public class History {
     @JoinColumn(name = "post_id")
     private Post post;
 
+    @ManyToOne
+    @JoinColumn(name = "editor_id")
+    private Users editor;
+
     public UUID getId() {
         return id;
     }
@@ -47,5 +51,13 @@ public class History {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public Users getEditor() {
+        return editor;
+    }
+
+    public void setEditor(Users editor) {
+        this.editor = editor;
     }
 }

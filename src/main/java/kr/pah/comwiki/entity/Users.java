@@ -4,29 +4,49 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static jakarta.persistence.CascadeType.*;
 
 @Entity
 public class Users {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    @Column(updatable = false)
+    private UUID id;
     private String name;
     private String userId;
     private String email;
     private String password;
     private String studentNumber;
-    private String profileImage;
+
+    @Lob
+    private byte[] profileImage;
 
     @OneToMany(mappedBy = "author", cascade = ALL)
     private List<Post> posts = new ArrayList<>();
 
-    public Long getId() {
+    @OneToMany(mappedBy = "editor", cascade = ALL)
+    private List<History> editHistory = new ArrayList<>();
+
+    // 새로운 엔티티가 생성될 때 UUID 생성
+    @PrePersist
+    public void autofill() {
+        if (this.id == null) {
+            this.id = UUID.randomUUID();
+        }
+    }
+
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void addEditHistory(History history) {
+        editHistory.add(history);
+        history.setEditor(this);
+    }
+
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -70,11 +90,11 @@ public class Users {
         this.studentNumber = studentNumber;
     }
 
-    public String getProfileImage() {
+    public byte[] getProfileImage() {
         return profileImage;
     }
 
-    public void setProfileImage(String profileImage) {
+    public void setProfileImage(byte[] profileImage) {
         this.profileImage = profileImage;
     }
 
@@ -84,5 +104,13 @@ public class Users {
 
     public void setPosts(List<Post> posts) {
         this.posts = posts;
+    }
+
+    public List<History> getEditHistory() {
+        return editHistory;
+    }
+
+    public void setEditHistory(List<History> editHistory) {
+        this.editHistory = editHistory;
     }
 }
