@@ -9,4 +9,8 @@ public class HelloController {
     public String register() {
         return "register.html";
     }
+    @GetMapping("/login")
+    public String login() {
+        return "login.html";
+    }
 }
