@@ -1,15 +1,17 @@
 package kr.pah.comwiki.entity;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
+@Getter @Setter
 public class History {
     @Id
     @GeneratedValue
-    private UUID id;
+    private java.util.UUID id;
     private String content;
     private LocalDateTime editedAt;
 
@@ -21,43 +23,4 @@ public class History {
     @JoinColumn(name = "editor_id")
     private Users editor;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getEditedAt() {
-        return editedAt;
-    }
-
-    public void setEditedAt(LocalDateTime editedAt) {
-        this.editedAt = editedAt;
-    }
-
-    public Post getPost() {
-        return post;
-    }
-
-    public void setPost(Post post) {
-        this.post = post;
-    }
-
-    public Users getEditor() {
-        return editor;
-    }
-
-    public void setEditor(Users editor) {
-        this.editor = editor;
-    }
 }
