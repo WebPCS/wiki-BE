@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,13 +30,13 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Users> getUserById(UUID id) {
+    public Users getUserById(UUID id) {
         return userRepository.findById(id);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Users> getUserByUserId(String userId) {
-        return Optional.ofNullable(userRepository.findByUserId(userId));
+    public Users getUserByUserId(String userId) {
+        return userRepository.findByUserId(userId);
     }
 
     @Transactional

@@ -20,9 +20,6 @@ public class Users {
     private String password;
     private String studentNumber;
 
-    @Lob
-    private byte[] profileImage;
-
     @OneToMany(mappedBy = "author", cascade = ALL)
     private List<Post> posts = new ArrayList<>();
 
@@ -88,14 +85,6 @@ public class Users {
 
     public void setStudentNumber(String studentNumber) {
         this.studentNumber = studentNumber;
-    }
-
-    public byte[] getProfileImage() {
-        return profileImage;
-    }
-
-    public void setProfileImage(byte[] profileImage) {
-        this.profileImage = profileImage;
     }
 
     public List<Post> getPosts() {
