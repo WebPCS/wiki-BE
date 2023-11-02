@@ -1,52 +1,47 @@
 package kr.pah.comwiki.controller;
 
-import org.springframework.beans.factory.annotation.Value;
+import jakarta.servlet.http.HttpSession;
+import kr.pah.comwiki.dto.PostDto;
+import kr.pah.comwiki.entity.Users;
+import kr.pah.comwiki.service.PostService;
+import kr.pah.comwiki.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.*;
 import kr.pah.comwiki.entity.Post;
-import kr.pah.comwiki.repository.PostRepository;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
+@RequestMapping("/api/posts")
+@RequiredArgsConstructor
 public class PostController {
+    private final PostService postService;
+    private final UserService userService;
 
-    private final PostRepository postRepository;
-
-    @Value("${file.upload-dir}")
-    private String uploadDir;
-
-    public PostController(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    @GetMapping("/search")
+    public ResponseEntity<List<Post>> getPostsByTitle(@RequestParam String title) {
+        List<Post> posts = postService.findPostsByTitle(title);
+        return ResponseEntity.ok(posts);
     }
 
-    @PostMapping("/uploadImage")
-    public ResponseEntity<?> uploadImage(@RequestParam("image") MultipartFile file) {
-        try {
-            // 파일 이름 생성 (실제 상황에 맞게 조정할 수 있음)
-            String originalFilename = file.getOriginalFilename();
-            String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-            String newFilename = System.currentTimeMillis() + fileExtension;
-
-            // 파일 저장 경로 설정
-            Path copyLocation = Paths.get(uploadDir + File.separator + newFilename);
-            file.transferTo(copyLocation); // 파일 저장
-
-            Post post = new Post();
-            post.setImagePath(copyLocation.toString()); // 이미지 경로 설정
-            postRepository.save(post); // 데이터베이스에 게시글 정보 저장
-
-            return new ResponseEntity<>(post, HttpStatus.OK);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    @PostMapping("/")
+    public ResponseEntity<?> createPost(@RequestBody PostDto.WritePostDto writePostDto, HttpSession session) {
+        if (session.getAttribute("userId") == null || session.getAttribute("userId").toString().isBlank()) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Location", "login.html");
+            return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
         }
+        Users user = userService.getUserById((UUID)session.getAttribute("userId"));
+        return postService.createPost(new Post(writePostDto.getTitle(), writePostDto.getContent(), user));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post postDetails) {
+        return ResponseEntity.ok(postService.updatePost(id, postDetails));
     }
 }
