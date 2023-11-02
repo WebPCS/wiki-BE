@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter @Setter
 public class History {
     @Id
     @GeneratedValue
-    private java.util.UUID id;
+    private UUID id;
     private String content;
     private LocalDateTime editedAt;
 
@@ -23,4 +24,18 @@ public class History {
     @JoinColumn(name = "editor_id")
     private Users editor;
 
+    public History() {
+
+    }
+
+    @PreUpdate
+    private void saved() {
+        editedAt = LocalDateTime.now();
+    }
+
+    public History(String content, Post post, Users editor) {
+        this.content = content;
+        this.post = post;
+        this.editor = editor;
+    }
 }
