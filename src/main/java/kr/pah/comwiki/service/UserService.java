@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -30,7 +29,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public Users getUserById(UUID id) {
+    public Users getUserById(java.util.UUID id) {
         return userRepository.findById(id);
     }
 
