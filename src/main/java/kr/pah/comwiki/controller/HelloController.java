@@ -9,8 +9,19 @@ public class HelloController {
     public String register() {
         return "register.html";
     }
+
     @GetMapping("/login")
     public String login() {
         return "login.html";
+    }
+
+    @GetMapping("/post")
+    public String writePost() {
+        return "write_post.html";
+    }
+
+    @GetMapping("/history")
+    public String history() {
+        return "history.html";
     }
 }
