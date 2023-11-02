@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import kr.pah.comwiki.entity.Post;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,10 +37,5 @@ public class PostController {
         }
         Users user = userService.getUserById((UUID)session.getAttribute("userId"));
         return postService.createPost(new Post(writePostDto.getTitle(), writePostDto.getContent(), user));
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post postDetails) {
-        return ResponseEntity.ok(postService.updatePost(id, postDetails));
     }
 }
