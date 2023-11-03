@@ -31,7 +31,7 @@ public class History {
 
     }
 
-    @PreUpdate
+    @PrePersist
     private void saved() {
         editedAt = LocalDateTime.now();
     }
