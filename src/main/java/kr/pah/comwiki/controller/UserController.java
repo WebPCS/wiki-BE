@@ -1,11 +1,14 @@
 package kr.pah.comwiki.controller;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import kr.pah.comwiki.dto.user.LoginDto;
+import kr.pah.comwiki.dto.user.RegisterDto;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.UserService;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,23 +38,19 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String loginUser(@RequestParam("userId") String userId,
-                            @RequestParam("password") String password,
-                            HttpSession session,
-                            Model model) {
-        Users user = userService.getUserByUserId(userId);
+    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginDto loginDto,
+                                            HttpSession session) {
+        return userService.loginUser(loginDto, session);
+    }
 
-        if (user != null && user.getPassword().equals(password)) {
-            session.setAttribute("userId", user.getId()); // 세션에 사용자 정보 저장
-            return "ok" + session.getAttribute("userId").toString(); // 로그인 성공시 리다이렉트할 페이지
-        } else {
-            model.addAttribute("error", "ID or Password Wrong.");
-            return "fail"; // 로그인 페이지로 다시 리다이렉트
-        }
+    @GetMapping("/checkLogin")
+    public ResponseEntity<?> checkLogin(HttpSession session) {
+        return ResponseEntity.ok(session.getAttribute("uid"));
     }
 
     @PostMapping("/update")
     public ResponseEntity<String> updateUser(HttpSession session, @RequestParam("email") String email, @RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("student_number") String student_number) {
+
         Users user = userService.getUserById((UUID) session.getAttribute("userId"));
         user.setEmail(email);
         user.setName(name);
@@ -63,8 +62,7 @@ public class UserController {
 
     // 사용자 등록
     @PostMapping("/register")
-    public ResponseEntity<Users> registerUser(Users user) {
-        Users registeredUser = userService.registerUser(user);
-        return ResponseEntity.ok(registeredUser);
+    public ResponseEntity<?> registerUser(@RequestBody @Valid RegisterDto registerDto, HttpSession session) {
+        return userService.saveUser(registerDto);
     }
 }
