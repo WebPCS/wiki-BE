@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -47,6 +48,17 @@ public class UserController {
             model.addAttribute("error", "ID or Password Wrong.");
             return "fail"; // 로그인 페이지로 다시 리다이렉트
         }
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<String> updateUser(HttpSession session, @RequestParam("email") String email, @RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("student_number") String student_number) {
+        Users user = userService.getUserById((UUID) session.getAttribute("userId"));
+        user.setEmail(email);
+        user.setName(name);
+        user.setPassword(password);
+        user.setStudentNumber(student_number);
+        userService.updateUser(user);
+        return ResponseEntity.ok("User Update");
     }
 
     // 사용자 등록
