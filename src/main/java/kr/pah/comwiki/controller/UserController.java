@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kr.pah.comwiki.dto.user.LoginDto;
 import kr.pah.comwiki.dto.user.RegisterDto;
+import kr.pah.comwiki.dto.user.UpdateDto;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.UserService;
 import org.apache.coyote.Response;
@@ -43,21 +44,14 @@ public class UserController {
         return userService.loginUser(loginDto, session);
     }
 
-    @GetMapping("/checkLogin")
+    @GetMapping("/checkLogin") // 로그인 UID 확인용
     public ResponseEntity<?> checkLogin(HttpSession session) {
         return ResponseEntity.ok(session.getAttribute("uid"));
     }
 
     @PostMapping("/update")
-    public ResponseEntity<String> updateUser(HttpSession session, @RequestParam("email") String email, @RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("student_number") String student_number) {
-
-        Users user = userService.getUserById((UUID) session.getAttribute("userId"));
-        user.setEmail(email);
-        user.setName(name);
-        user.setPassword(password);
-        user.setStudentNumber(student_number);
-        userService.updateUser(user);
-        return ResponseEntity.ok("User Update");
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UpdateDto updateDto, HttpSession session) {
+        return userService.updateUser(updateDto, session);
     }
 
     // 사용자 등록

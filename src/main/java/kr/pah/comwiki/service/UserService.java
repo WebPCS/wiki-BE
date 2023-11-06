@@ -3,6 +3,7 @@ package kr.pah.comwiki.service;
 import jakarta.servlet.http.HttpSession;
 import kr.pah.comwiki.dto.user.LoginDto;
 import kr.pah.comwiki.dto.user.RegisterDto;
+import kr.pah.comwiki.dto.user.UpdateDto;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.repository.UserRepository;
 import kr.pah.comwiki.util.Result;
@@ -30,8 +31,15 @@ public class UserService {
     }
 
     @Transactional
-    public Users updateUser(Users user) {
-        return userRepository.save(user);
+    public ResponseEntity<?> updateUser(UpdateDto updateDto, HttpSession session) {
+        Users user = userRepository.findByUid((UUID) session.getAttribute("uid"));
+        if (user != null) {
+            user.setName(updateDto.getName());
+            user.setEmail(user.getEmail());
+            user.setPassword(updateDto.getPassword());
+            return new Result<>().create(200, "정상적으로 변경되었습니다.");
+        }
+        return new Result<>().create(403, "로그인 후 이용 바랍니다.");
     }
 
     public ResponseEntity<?> loginUser(LoginDto loginDto, HttpSession session) {
