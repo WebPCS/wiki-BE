@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -27,10 +26,7 @@ public class PostService {
 
     @Transactional()
     public ResponseEntity<?> createPost(CreatePostDto createPostDto, HttpSession session) {
-        Post post = new Post();
-        post.setTitle(createPostDto.getTitle());
-        post.setContent(createPostDto.getContent());
-        post.setAuthor(userRepository.findByUid((UUID) session.getAttribute("uid")));
+        Post post = new Post(createPostDto.getTitle(), createPostDto.getContent(), userRepository.findByUid((UUID) session.getAttribute("uid")));
         postRepository.save(post);
         History history = new History();
         history.setEditor(post.getAuthor());
