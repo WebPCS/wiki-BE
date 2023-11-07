@@ -1,7 +1,10 @@
 package kr.pah.comwiki.controller;
 
+import jakarta.persistence.PreUpdate;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import kr.pah.comwiki.dto.PostDto;
+import kr.pah.comwiki.dto.post.CreatePostDto;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.PostService;
 import kr.pah.comwiki.service.UserService;
@@ -13,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import kr.pah.comwiki.entity.Post;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/posts")
@@ -22,20 +24,21 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
 
-    @GetMapping("/search")
-    public ResponseEntity<List<Post>> getPostsByTitle(@RequestParam String title) {
-        List<Post> posts = postService.findPostsByTitle(title);
-        return ResponseEntity.ok(posts);
-    }
+//    @GetMapping("/search")
+//    public ResponseEntity<?> getPostsByTitle(@Valid @RequestBody String title) {
+//        Post post = postService.findPostsByTitle(title);
+//        return ResponseEntity.ok(post);
+//    }
 
     @PostMapping("/")
-    public ResponseEntity<?> createPost(@RequestBody PostDto.WritePostDto writePostDto, HttpSession session) {
-        if (session.getAttribute("userId") == null || session.getAttribute("userId").toString().isBlank()) {
+    public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostDto createPostDto, HttpSession session) {
+        if (session.getAttribute("uid") == null || session.getAttribute("uid").toString().isBlank()) {
             HttpHeaders headers = new HttpHeaders();
             headers.add("Location", "login.html");
             return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
         }
-        Users user = userService.getUserById((UUID)session.getAttribute("userId"));
-        return postService.createPost(new Post(writePostDto.getTitle(), writePostDto.getContent(), user));
+        return postService.createPost(createPostDto, session);
     }
+
+
 }

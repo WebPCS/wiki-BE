@@ -1,36 +1,48 @@
 package kr.pah.comwiki.service;
 
-import jakarta.transaction.Transactional;
+import jakarta.servlet.http.HttpSession;
+import kr.pah.comwiki.dto.post.CreatePostDto;
 import kr.pah.comwiki.entity.History;
 import kr.pah.comwiki.entity.Post;
 import kr.pah.comwiki.exception.ResourceNotFoundException;
 import kr.pah.comwiki.repository.HistoryRepository;
 import kr.pah.comwiki.repository.PostRepository;
+import kr.pah.comwiki.repository.UserRepository;
+import kr.pah.comwiki.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostService {
     private final PostRepository postRepository;
     private final HistoryRepository historyRepository;
+    private final UserRepository userRepository;
 
-    public ResponseEntity<String> createPost(Post post) {
+    @Transactional()
+    public ResponseEntity<?> createPost(CreatePostDto createPostDto, HttpSession session) {
+        Post post = new Post();
+        post.setTitle(createPostDto.getTitle());
+        post.setContent(createPostDto.getContent());
+        post.setAuthor(userRepository.findByUid((UUID) session.getAttribute("uid")));
         postRepository.save(post);
         History history = new History();
         history.setEditor(post.getAuthor());
         history.setPost(post);
         history.setContent(post.getContent());
         historyRepository.save(history);
-        return ResponseEntity.ok("정상적으로 게시글이 작성되었다");
+        return new Result<>().create(200, "정상적으로 게시글이 작성되었습니다.");
     }
 
-    public List<Post> findPostsByTitle(String title) {
-        return postRepository.findByTitleContaining(title);
-    }
+//    public Post findPostsByTitle(String title) {
+//        return postRepository.findByTitleContaining(title);
+//    }
 
     public Post getPostById(Long postId) {
         return postRepository.findById(postId)
