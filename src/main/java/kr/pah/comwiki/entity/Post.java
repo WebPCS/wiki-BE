@@ -22,7 +22,6 @@ public class Post {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String imagePath;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
