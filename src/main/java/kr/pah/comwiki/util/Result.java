@@ -1,21 +1,29 @@
 package kr.pah.comwiki.util;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Result<T> {
-    private Integer httpCode;
-    private T message;
+    private Integer status;
+    private T payload;
 
-    public static <T> ResponseEntity<Result<T>> create(Integer httpCode, T message) {
+    private static final HttpHeaders JSON_HEADERS = createJsonHeaders();
+
+    public Result(Integer status, T payload) {
+        this.status = status;
+        this.payload = payload;
+    }
+
+    public static <T> ResponseEntity<Result<T>> create(HttpStatus status, T payload) {
+        return ResponseEntity.status(status).headers(JSON_HEADERS).body(new Result<>(status.value(), payload));
+    }
+
+    private static HttpHeaders createJsonHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
-        return ResponseEntity.ok().headers(headers).body(new Result<>(httpCode, message));
+        return headers;
     }
 }
