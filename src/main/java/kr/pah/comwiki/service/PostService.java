@@ -10,6 +10,7 @@ import kr.pah.comwiki.repository.PostRepository;
 import kr.pah.comwiki.repository.UserRepository;
 import kr.pah.comwiki.util.Result;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,9 @@ public class PostService {
 
     @Transactional()
     public ResponseEntity<?> createPost(CreatePostDto createPostDto, HttpSession session) {
+        if (postRepository.findPostByTitle(createPostDto.getTitle()) != null) {
+            return Result.create(HttpStatus.OK, "이미 존재하는 게시글입니다. 게시글 수정을 이용하여 주십시오.");
+        }
         Post post = new Post(createPostDto.getTitle(), createPostDto.getContent(), userRepository.findByUid((UUID) session.getAttribute("uid")));
         postRepository.save(post);
         History history = new History();
@@ -33,15 +37,15 @@ public class PostService {
         history.setPost(post);
         history.setContent(post.getContent());
         historyRepository.save(history);
-        return Result.create(200, "정상적으로 게시글이 작성되었습니다.");
+        return Result.create(HttpStatus.OK, "정상적으로 게시글이 작성되었습니다.");
     }
 
     public ResponseEntity<?> getPostByTitle(String title) {
         Post post = postRepository.findPostByTitle(title);
         if (post != null) {
-            return ResponseEntity.ok(post);
+            return Result.create(HttpStatus.OK, post);
         }
-        return Result.create(404, "일치하는 게시글을 찾을 수 없습니다.");
+        return Result.create(HttpStatus.NOT_FOUND, "일치하는 게시글을 찾을 수 없습니다.");
     }
 
     @Transactional

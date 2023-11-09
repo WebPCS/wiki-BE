@@ -1,10 +1,8 @@
 package kr.pah.comwiki.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,9 +23,11 @@ public class Post {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private Users author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<History> histories = new ArrayList<>();
 
     @PrePersist

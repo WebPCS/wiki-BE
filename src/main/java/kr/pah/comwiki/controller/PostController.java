@@ -8,7 +8,9 @@ import kr.pah.comwiki.dto.post.CreatePostDto;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.PostService;
 import kr.pah.comwiki.service.UserService;
+import kr.pah.comwiki.util.Result;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,11 +26,10 @@ public class PostController {
     private final PostService postService;
     private final UserService userService;
 
-//    @GetMapping("/search")
-//    public ResponseEntity<?> getPostsByTitle(@Valid @RequestBody String title) {
-//        Post post = postService.findPostsByTitle(title);
-//        return ResponseEntity.ok(post);
-//    }
+    @GetMapping("/search/{title}")
+    public ResponseEntity<?> getPostsByTitle(@Valid @PathVariable String title) {
+        return postService.getPostByTitle(title);
+    }
 
     @PostMapping("/")
     public ResponseEntity<?> createPost(@Valid @RequestBody CreatePostDto createPostDto, HttpSession session) {
