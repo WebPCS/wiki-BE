@@ -5,6 +5,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.net.URI;
+
 @Data
 public class Result<T> {
     private Integer status;
@@ -15,6 +17,12 @@ public class Result<T> {
     public Result(Integer status, T payload) {
         this.status = status;
         this.payload = payload;
+    }
+
+    public static ResponseEntity<?> login() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(URI.create("/login"));
+        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
     }
 
     public static <T> ResponseEntity<Result<T>> create(HttpStatus status, T payload) {
