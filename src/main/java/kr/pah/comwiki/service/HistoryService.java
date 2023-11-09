@@ -1,10 +1,8 @@
 package kr.pah.comwiki.service;
 
 import kr.pah.comwiki.entity.History;
-import kr.pah.comwiki.entity.Post;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.repository.HistoryRepository;
-import kr.pah.comwiki.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,11 +1,6 @@
 package kr.pah.comwiki.controller;
 
-import jakarta.servlet.http.HttpSession;
-import kr.pah.comwiki.dto.HistoryDto;
-import kr.pah.comwiki.dto.PostDto;
 import kr.pah.comwiki.entity.History;
-import kr.pah.comwiki.entity.Post;
-import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.HistoryService;
 import kr.pah.comwiki.service.PostService;
 import kr.pah.comwiki.service.UserService;
@@ -38,11 +33,11 @@ public class HistoryController {
         return ResponseEntity.ok(history);
     }
 
-    @PostMapping
-    public ResponseEntity<History> createHistory(@RequestBody HistoryDto.WriteHistoryDto historyDto, HttpSession session) {
-        Users user = userService.getUserById((UUID)session.getAttribute("userId"));
-        Post relatedPost = postService.getPostById(historyDto.getPostId());
-        History history = new History(historyDto.getContent(), relatedPost, user);
-        return ResponseEntity.ok(historyService.saveHistory(history, user));
-    }
+//    @PostMapping
+//    public ResponseEntity<History> createHistory(@RequestBody HistoryDto.WriteHistoryDto historyDto, HttpSession session) {
+//        Users user = userService.getUserById((UUID)session.getAttribute("uid"));
+//        Post relatedPost = postService.getPostById(historyDto.getPostId());
+//        History history = new History(historyDto.getContent(), relatedPost, user);
+//        return ResponseEntity.ok(historyService.saveHistory(history, user));
+//    }
 }

@@ -7,13 +7,11 @@ import kr.pah.comwiki.dto.user.RegisterDto;
 import kr.pah.comwiki.dto.user.UpdateDto;
 import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.UserService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
