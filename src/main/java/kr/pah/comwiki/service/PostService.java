@@ -33,16 +33,15 @@ public class PostService {
         history.setPost(post);
         history.setContent(post.getContent());
         historyRepository.save(history);
-        return new Result<>().create(200, "정상적으로 게시글이 작성되었습니다.");
+        return Result.create(200, "정상적으로 게시글이 작성되었습니다.");
     }
 
-//    public Post findPostsByTitle(String title) {
-//        return postRepository.findByTitleContaining(title);
-//    }
-
-    public Post getPostById(Long postId) {
-        return postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post 404 : " + postId));
+    public ResponseEntity<?> getPostByTitle(String title) {
+        Post post = postRepository.findPostByTitle(title);
+        if (post != null) {
+            return ResponseEntity.ok(post);
+        }
+        return Result.create(404, "일치하는 게시글을 찾을 수 없습니다.");
     }
 
     @Transactional

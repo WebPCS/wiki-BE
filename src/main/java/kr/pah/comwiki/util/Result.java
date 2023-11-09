@@ -13,9 +13,9 @@ public class Result<T> {
     private Integer httpCode;
     private T message;
 
-    public ResponseEntity<?> create(Integer httpCode, T message) {
+    public static <T> ResponseEntity<Result<T>> create(Integer httpCode, T message) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
-        return ResponseEntity.ok().headers(headers).body(new Result<T>(httpCode, message));
+        return ResponseEntity.ok().headers(headers).body(new Result<>(httpCode, message));
     }
 }
