@@ -2,14 +2,17 @@ package kr.pah.comwiki.service;
 
 import jakarta.servlet.http.HttpSession;
 import kr.pah.comwiki.dto.post.CreatePostDto;
+import kr.pah.comwiki.dto.post.UpdatePostDto;
 import kr.pah.comwiki.entity.History;
 import kr.pah.comwiki.entity.Post;
+import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.exception.ResourceNotFoundException;
 import kr.pah.comwiki.repository.HistoryRepository;
 import kr.pah.comwiki.repository.PostRepository;
 import kr.pah.comwiki.repository.UserRepository;
 import kr.pah.comwiki.util.Result;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.Host;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -54,5 +57,17 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Post 404 " + postId));
         post.setContent(content);
         postRepository.save(post);
+    }
+
+    public ResponseEntity<?> updatePost(UpdatePostDto updatePostDto, HttpSession session) {
+        Post post = postRepository.findPostById(updatePostDto.getId());
+        if (post != null) {
+            History history = new History(updatePostDto.getContent(), post, userRepository.findByUid((UUID) session.getAttribute("uid")));
+            post.setContent(updatePostDto.getContent());
+            postRepository.save(post);
+            historyRepository.save(history);
+            return Result.create(HttpStatus.OK, "정상적으로 위키가 수정되었습니다.");
+        }
+        return Result.create(HttpStatus.NOT_FOUND, "일치하는 게시글을 찾을 수 없습니다.");
     }
 }

@@ -16,7 +16,6 @@ import java.util.UUID;
 @Slf4j
 public class HistoryService {
     private final HistoryRepository historyRepository;
-    private final PostService postService;
 
     @Transactional(readOnly = true)
     public List<History> getAllHistories() {
@@ -26,13 +25,6 @@ public class HistoryService {
     @Transactional(readOnly = true)
     public History getHistoryById(UUID id) {
         return historyRepository.findById(id).orElse(null);
-    }
-
-    @Transactional
-    public History saveHistory(History history, Users user) {
-        history.setEditor(user);
-        postService.updatePostContent(history.getPost().getId(), history.getContent());
-        return historyRepository.save(history);
     }
 
 }

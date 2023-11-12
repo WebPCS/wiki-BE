@@ -3,6 +3,7 @@ package kr.pah.comwiki.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kr.pah.comwiki.dto.post.CreatePostDto;
+import kr.pah.comwiki.dto.post.UpdatePostDto;
 import kr.pah.comwiki.service.PostService;
 import kr.pah.comwiki.service.UserService;
 import kr.pah.comwiki.util.Result;
@@ -30,5 +31,11 @@ public class PostController {
         return postService.createPost(createPostDto, session);
     }
 
-
+    @PostMapping("/updatePost")
+    public ResponseEntity<?> updatePost(@Valid @RequestBody UpdatePostDto updatePostDto, HttpSession session) {
+        if (session.getAttribute("uid") == null || session.getAttribute("uid").toString().isBlank()) {
+            return Result.login();
+        }
+        return postService.updatePost(updatePostDto, session);
+    }
 }
