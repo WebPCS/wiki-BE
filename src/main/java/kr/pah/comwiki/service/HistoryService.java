@@ -13,16 +13,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Transactional(readOnly = true)
 public class HistoryService {
     private final HistoryRepository historyRepository;
 
-    @Transactional(readOnly = true)
-    public List<History> getAllHistories() {
-        return historyRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
     public History getHistoryById(UUID id) {
         return historyRepository.findById(id).orElse(null);
     }

@@ -51,6 +51,7 @@ public class ImageService {
         return uuid;
     }
 
+    // 이미지 불러오기
     public ResponseEntity<?> getImageById(UUID id) throws IOException {
         Image image = imageRepository.findImageById(id);
         if (image == null) {

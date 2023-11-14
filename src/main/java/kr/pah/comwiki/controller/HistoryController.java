@@ -16,14 +16,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class HistoryController {
     private final HistoryService historyService;
-    private final UserService userService;
-    private final PostService postService;
 
-    @GetMapping
-    public ResponseEntity<List<History>> getAllHistories() {
-        return ResponseEntity.ok(historyService.getAllHistories());
-    }
-
+    // 히스토리 ID으로 히스토리 조회
     @GetMapping("/{id}")
     public ResponseEntity<History> getHistoryById(@PathVariable UUID id) {
         History history = historyService.getHistoryById(id);
@@ -32,12 +26,4 @@ public class HistoryController {
         }
         return ResponseEntity.ok(history);
     }
-
-//    @PostMapping
-//    public ResponseEntity<History> createHistory(@RequestBody HistoryDto.WriteHistoryDto historyDto, HttpSession session) {
-//        Users user = userService.getUserById((UUID)session.getAttribute("uid"));
-//        Post relatedPost = postService.getPostById(historyDto.getPostId());
-//        History history = new History(historyDto.getContent(), relatedPost, user);
-//        return ResponseEntity.ok(historyService.saveHistory(history, user));
-//    }
 }

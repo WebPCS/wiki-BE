@@ -5,48 +5,25 @@ import jakarta.validation.Valid;
 import kr.pah.comwiki.dto.user.LoginDto;
 import kr.pah.comwiki.dto.user.RegisterDto;
 import kr.pah.comwiki.dto.user.UpdateDto;
-import kr.pah.comwiki.entity.Users;
 import kr.pah.comwiki.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/users")
+@RequiredArgsConstructor
 public class UserController {
-
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
-    // 모든 사용자 조회
-    @GetMapping
-    public ResponseEntity<List<Users>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
-
-    // 사용자 조회 (ID 기준)
-    @GetMapping("/{id}")
-    public ResponseEntity<Users> getUserById(@PathVariable java.util.UUID id) {
-        return ResponseEntity.ok(userService.getUserById(id));
-    }
-
+    // 사용자 로그인
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid LoginDto loginDto,
-                                            HttpSession session) {
+                                       HttpSession session) {
         return userService.loginUser(loginDto, session);
     }
 
-    @GetMapping("/checkLogin") // 로그인 UID 확인용
-    public ResponseEntity<?> checkLogin(HttpSession session) {
-        return ResponseEntity.ok(session.getAttribute("uid"));
-    }
-
+    // 사용자 업데이트
     @PostMapping("/update")
     public ResponseEntity<?> updateUser(@RequestBody @Valid UpdateDto updateDto, HttpSession session) {
         return userService.updateUser(updateDto, session);

@@ -24,14 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
 
-    public List<Users> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public Users getUserById(UUID id) {
-        return userRepository.findByUid(id);
-    }
-
+    // 사용자 정보 업데이트
     @Transactional
     public ResponseEntity<?> updateUser(UpdateDto updateDto, HttpSession session) {
         Users user = userRepository.findByUid((UUID) session.getAttribute("uid"));
@@ -44,6 +37,7 @@ public class UserService {
         return Result.create(FORBIDDEN, "로그인 후 이용 바랍니다.");
     }
 
+    // 유저 로그인
     public ResponseEntity<?> loginUser(LoginDto loginDto, HttpSession session) {
         Users user = userRepository.findByUsername(loginDto.getUsername());
         if (user != null && user.getPassword().equals(loginDto.getPassword())) {
@@ -53,6 +47,7 @@ public class UserService {
     return Result.create(OK, "아이디 혹은 비밀번호가 잘못 되었습니다.");
     }
 
+    // 유저 회원가입
     @Transactional
     public ResponseEntity<?> saveUser(RegisterDto registerDto) {
         Users checkDuplicateId = userRepository.findByUsername(registerDto.getUsername());

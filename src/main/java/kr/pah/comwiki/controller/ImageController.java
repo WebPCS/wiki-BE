@@ -2,7 +2,6 @@ package kr.pah.comwiki.controller;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import kr.pah.comwiki.entity.Image;
 import kr.pah.comwiki.service.ImageService;
 import kr.pah.comwiki.util.Result;
 import lombok.RequiredArgsConstructor;

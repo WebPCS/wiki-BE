@@ -28,7 +28,8 @@ public class PostService {
     private final HistoryRepository historyRepository;
     private final UserRepository userRepository;
 
-    @Transactional()
+    // 게시글 작성
+    @Transactional
     public ResponseEntity<?> createPost(CreatePostDto createPostDto, HttpSession session) {
         if (postRepository.findPostByTitle(createPostDto.getTitle()) != null) {
             return Result.create(HttpStatus.OK, "이미 존재하는 게시글입니다. 게시글 수정을 이용하여 주십시오.");
@@ -43,6 +44,7 @@ public class PostService {
         return Result.create(HttpStatus.OK, "정상적으로 게시글이 작성되었습니다.");
     }
 
+    // 제목을 기반으로 게시글 찾기
     public ResponseEntity<?> getPostByTitle(String title) {
         Post post = postRepository.findPostByTitle(title);
         if (post != null) {
@@ -51,14 +53,8 @@ public class PostService {
         return Result.create(HttpStatus.NOT_FOUND, "일치하는 게시글을 찾을 수 없습니다.");
     }
 
+    // postId를 기반으로 게시글 내용 업데이트
     @Transactional
-    public void updatePostContent(Long postId, String content) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new ResourceNotFoundException("Post 404 " + postId));
-        post.setContent(content);
-        postRepository.save(post);
-    }
-
     public ResponseEntity<?> updatePost(UpdatePostDto updatePostDto, HttpSession session) {
         Post post = postRepository.findPostById(updatePostDto.getId());
         if (post != null) {
