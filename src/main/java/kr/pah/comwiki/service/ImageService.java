@@ -1,9 +1,17 @@
 package kr.pah.comwiki.service;
 
+import jakarta.servlet.http.HttpSession;
 import kr.pah.comwiki.entity.Image;
 import kr.pah.comwiki.repository.ImageRepository;
+import kr.pah.comwiki.repository.UserRepository;
+import kr.pah.comwiki.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,32 +28,41 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 public class ImageService {
     private final ImageRepository imageRepository;
+    private final UserRepository userRepository;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
 
     // 이미지 저장
     @Transactional
-    public Image saveImage(MultipartFile file) throws IOException {
-        String filename = file.getOriginalFilename();
-        Path storageDirectory = Paths.get(uploadDir);
-        if (!Files.exists(storageDirectory)) {
-            Files.createDirectories(storageDirectory);
-        }
-        Path destinationPath = storageDirectory.resolve(Paths.get(filename))
-                .normalize().toAbsolutePath();
-        try {
-            Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            throw new IOException("파일 저장에 실패했습니다: " + filename, e);
-        }
+    public String saveImage(MultipartFile file, HttpSession session) throws IOException {
+        String originalFilename = file.getOriginalFilename();
+        String storageFilename = UUID.randomUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
+
+        Path destinationPath = Paths.get(uploadDir).resolve(storageFilename).normalize().toAbsolutePath();
+        Files.createDirectories(destinationPath.getParent());
+        Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
         Image image = new Image();
-        image.setFilename(filename);
-        return imageRepository.save(image);
+        image.setId(UUID.fromString(storageFilename.split("\\.")[0]));
+        image.setExtension(storageFilename.split("\\.")[1]);
+        image.setUploader(userRepository.findByUid((UUID) session.getAttribute("uid")));
+        image.setFilename(originalFilename);
+        imageRepository.save(image);
+
+        return storageFilename.split("\\.")[0];
     }
 
-    public Image getImageById(UUID id) {
-        return imageRepository.findById(id).orElseThrow(() -> new RuntimeException("이미지를 찾을 수 없습니다."));
+
+    public ResponseEntity<?> getImageById(UUID id) throws IOException {
+        String filename = imageRepository.findImageById(id).getId() + "." + imageRepository.findImageById(id).getExtension();
+        FileSystemResource resource = new FileSystemResource(uploadDir + filename);
+        if (!resource.exists()) {
+            return Result.create(HttpStatus.NOT_FOUND, "파일이 존재하지 않습니다.");
+        }
+        HttpHeaders headers = new HttpHeaders();
+        Path file = Paths.get(uploadDir + filename);
+        headers.add("Content-Type", Files.probeContentType(file));
+        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
     }
 }

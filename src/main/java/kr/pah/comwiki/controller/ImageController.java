@@ -1,5 +1,6 @@
 package kr.pah.comwiki.controller;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kr.pah.comwiki.entity.Image;
 import kr.pah.comwiki.service.ImageService;
@@ -22,15 +23,13 @@ public class ImageController {
 
     // 이미지 업로드
     @PostMapping("/upload")
-    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
-        Image savedImage = imageService.saveImage(file);
-        return Result.create(HttpStatus.OK, "업로드 성공");
+    public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
+        return Result.create(HttpStatus.OK, imageService.saveImage(file, session));
     }
 
     // 이미지 조회
     @GetMapping("/{id}")
-    public ResponseEntity<?> getImage(@Valid @RequestBody UUID id) {
-        Image image = imageService.getImageById(id);
-        return Result.create(HttpStatus.OK, "완료");
+    public ResponseEntity<?> getImage(@Valid @PathVariable UUID id) throws IOException {
+        return imageService.getImageById(id);
     }
 }

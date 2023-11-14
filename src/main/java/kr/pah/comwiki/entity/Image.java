@@ -12,14 +12,15 @@ import lombok.Setter;
 import java.util.UUID;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Image {
     @Id
-    @GeneratedValue
     private UUID id;
     private String filename;
+    private String extension;
 
     @ManyToOne
     private Users uploader;
