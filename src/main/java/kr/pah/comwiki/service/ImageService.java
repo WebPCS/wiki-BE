@@ -35,34 +35,39 @@ public class ImageService {
 
     // 이미지 저장
     @Transactional
-    public String saveImage(MultipartFile file, HttpSession session) throws IOException {
+    public UUID saveImage(MultipartFile file, HttpSession session) throws IOException {
         String originalFilename = file.getOriginalFilename();
-        String storageFilename = UUID.randomUUID() + originalFilename.substring(originalFilename.lastIndexOf("."));
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        UUID uuid = UUID.randomUUID();
+        String storageFilename = uuid + fileExtension;
 
-        Path destinationPath = Paths.get(uploadDir).resolve(storageFilename).normalize().toAbsolutePath();
+        Path destinationPath = Paths.get(uploadDir, storageFilename).normalize().toAbsolutePath();
         Files.createDirectories(destinationPath.getParent());
         Files.copy(file.getInputStream(), destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
-        Image image = new Image();
-        image.setId(UUID.fromString(storageFilename.split("\\.")[0]));
-        image.setExtension(storageFilename.split("\\.")[1]);
-        image.setUploader(userRepository.findByUid((UUID) session.getAttribute("uid")));
-        image.setFilename(originalFilename);
+        Image image = new Image(uuid, originalFilename, fileExtension, userRepository.findByUid((UUID) session.getAttribute("uid")));
         imageRepository.save(image);
 
-        return storageFilename.split("\\.")[0];
+        return uuid;
     }
-
 
     public ResponseEntity<?> getImageById(UUID id) throws IOException {
-        String filename = imageRepository.findImageById(id).getId() + "." + imageRepository.findImageById(id).getExtension();
-        FileSystemResource resource = new FileSystemResource(uploadDir + filename);
-        if (!resource.exists()) {
+        Image image = imageRepository.findImageById(id);
+        if (image == null) {
             return Result.create(HttpStatus.NOT_FOUND, "파일이 존재하지 않습니다.");
         }
+
+        String filename = image.getId() + "." + image.getExtension();
+        Path filePath = Paths.get(uploadDir, filename);
+
+        if (!Files.exists(filePath)) {
+            return Result.create(HttpStatus.NOT_FOUND, "파일이 존재하지 않습니다.");
+        }
+
+        FileSystemResource resource = new FileSystemResource(filePath);
         HttpHeaders headers = new HttpHeaders();
-        Path file = Paths.get(uploadDir + filename);
-        headers.add("Content-Type", Files.probeContentType(file));
-        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+        headers.add("Content-Type", Files.probeContentType(filePath));
+        return new ResponseEntity<>(resource, headers, HttpStatus.OK);
     }
+
 }
